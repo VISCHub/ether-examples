@@ -52,7 +52,6 @@ def decrypt_aes_128_ctr(pwd, utc_data):
     expected_mac = utc_cipher_data['mac']
     actual_mac = keccak_256(derived_key[-16:] + cipher_text).hexdigest()
     assert actual_mac == expected_mac, 'MAC error: Expected %s != actual %s' % (expected_mac, actual_mac)
-    print("Successfully decrypted UTC file!")
     return dec_priv_key
 
 SUPPORTED_CIPHERS = {
@@ -61,7 +60,7 @@ SUPPORTED_CIPHERS = {
 
 def decrypt_utc_file(pwd, utc_file_name):
     '''Decrypt Ether UTC file. The password must be in plain text'''
-    with open(utc_file_name) as utc_fh:
+    with open(utc_file_name, 'r') as utc_fh:
         utc_data = json.load(utc_fh)
 
     utc_cipher_data = utc_data['Crypto']
@@ -72,14 +71,16 @@ def decrypt_utc_file(pwd, utc_file_name):
 
     # Delegate decryption
     dec_priv_key = SUPPORTED_CIPHERS[cipher_name](pwd, utc_data)
+    print("Successfully decrypted the UTC file: %s" % utc_file_name)
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         sys.stderr.write("Usage: %s UTC_JSON_file\n" % sys.argv[0])
         sys.exit(1)
     print("Preparing to decrypt wallet from UTC file")
+    utc_file_name = sys.argv[1]
     pwd = None
     while not pwd:
         pwd_hex = getpass.getpass("UTC file password in HEX: ")
         pwd = binascii.unhexlify(pwd_hex)
-    decrypt_utc_file(pwd, sys.argv[1])
+    decrypt_utc_file(pwd, utc_file_name)
