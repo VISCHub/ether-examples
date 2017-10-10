@@ -26,21 +26,22 @@ SUPPORTED_KDFS = {
 def decrypt_aes_128_ctr(pwd, utc_data):
     '''Decrypt AES 128 CTR. Requires plain text password and Ether UTC file as JSON object'''
     # Decrypt
-    utc_cipher = utc_data['Crypto']
+    utc_cipher_data = utc_data['Crypto']
     # Check that we have supported KDF
-    cur_kdf = utc_cipher['kdf']
+    cur_kdf = utc_cipher_data['kdf']
     assert cur_kdf in SUPPORTED_KDFS, 'Unsupported KDF: %s' % cur_kdf
 
-    kdf_params = utc_cipher['kdfparams']
+    kdf_params = utc_cipher_data['kdfparams']
     # Delegate to the KDF
     derived_key = SUPPORTED_KDFS[cur_kdf](pwd, kdf_params)
+    assert len(derived_key) == 32, 'Derived key: Expected length 32, got %d' % len(derived_key)
 
     # Decryption key is only the first 16 bytes
     dec_key = derived_key[:16]
     # Convert cipher text from HEX to binary data
-    cipher_text = binascii.unhexlify(utc_cipher['ciphertext'])
+    cipher_text = binascii.unhexlify(utc_cipher_data['ciphertext'])
     # Convert IV from HEX to base 10
-    aes_iv_hex = utc_cipher['cipherparams']['iv']
+    aes_iv_hex = utc_cipher_data['cipherparams']['iv']
     aes_iv = int(aes_iv_hex, 16)
     # Get the counter for AES
     counter = Counter.new(128, initial_value=aes_iv)
@@ -48,8 +49,8 @@ def decrypt_aes_128_ctr(pwd, utc_data):
     dec_priv_key = binascii.hexlify(cipher.decrypt(cipher_text))
 
     # MAC in v3 is the KECCAK-256 of the last 16 bytes of the derived key and cipher text
-    expected_mac = utc_cipher['mac']
-    actual_mac = keccak_256(derived_key[16:] + cipher_text).hexdigest()
+    expected_mac = utc_cipher_data['mac']
+    actual_mac = keccak_256(derived_key[-16:] + cipher_text).hexdigest()
     assert actual_mac == expected_mac, 'MAC error: Expected %s != actual %s' % (expected_mac, actual_mac)
     print("Successfully decrypted UTC file!")
     return dec_priv_key
@@ -63,14 +64,14 @@ def decrypt_utc_file(pwd, utc_file_name):
     with open(utc_file_name) as utc_fh:
         utc_data = json.load(utc_fh)
 
-    utc_cipher = utc_data['Crypto']
-    cur_cipher = utc_cipher['cipher']
+    utc_cipher_data = utc_data['Crypto']
+    cipher_name = utc_cipher_data['cipher']
 
     # For this example, only AES 128 CTR is supported
-    assert cur_cipher in SUPPORTED_CIPHERS, 'Unsupported cipher: %s' % cur_cipher
+    assert cipher_name in SUPPORTED_CIPHERS, 'Unsupported cipher: %s' % cipher_name
 
     # Delegate decryption
-    dec_priv_key = SUPPORTED_CIPHERS[cur_cipher](pwd, utc_data)
+    dec_priv_key = SUPPORTED_CIPHERS[cipher_name](pwd, utc_data)
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
