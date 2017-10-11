@@ -6,9 +6,8 @@ from Crypto.Cipher import AES
 from Crypto.Util import Counter
 from sha3 import keccak_256
 
-# pip install -U pysha3
-# pip install -U scrypt
-# pip install -U pycrypto
+# pip install -U pysha3 scrypt pycrypto
+
 
 def kdf_scrypt(pwd, kdf_params):
     '''Derive key using Scrypt. Accept KDF params from Ether UTC file'''
@@ -19,9 +18,11 @@ def kdf_scrypt(pwd, kdf_params):
     # Get derived key
     return scrypt.hash(pwd, salt, N=N, r=r, p=p, buflen=dklen)
 
+
 SUPPORTED_KDFS = {
     'scrypt': kdf_scrypt,
 }
+
 
 def decrypt_aes_128_ctr(pwd, utc_data):
     '''Decrypt AES 128 CTR. Requires plain text password and Ether UTC file as JSON object'''
@@ -54,9 +55,11 @@ def decrypt_aes_128_ctr(pwd, utc_data):
     assert actual_mac == expected_mac, 'MAC error: Expected %s != actual %s' % (expected_mac, actual_mac)
     return dec_priv_key
 
+
 SUPPORTED_CIPHERS = {
     'aes-128-ctr': decrypt_aes_128_ctr,
 }
+
 
 def decrypt_utc_file(pwd, utc_file_name):
     '''Decrypt Ether UTC file. The password must be in plain text'''
@@ -73,6 +76,14 @@ def decrypt_utc_file(pwd, utc_file_name):
     dec_priv_key = SUPPORTED_CIPHERS[cipher_name](pwd, utc_data)
     print("Successfully decrypted the UTC file: %s" % utc_file_name)
 
+
+
+def decrypt_utc_file_hex_pwd(pwd_hex, utc_file_name):
+    '''Decrypt Ether UTC file. The password must be in HEX'''
+    pwd = binascii.unhexlify(pwd_hex)
+    decrypt_utc_file(pwd, utc_file_name)
+
+
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         sys.stderr.write("Usage: %s UTC_JSON_file\n" % sys.argv[0])
@@ -82,5 +93,4 @@ if __name__ == '__main__':
     pwd = None
     while not pwd:
         pwd_hex = getpass.getpass("UTC file password in HEX: ")
-        pwd = binascii.unhexlify(pwd_hex)
-    decrypt_utc_file(pwd, utc_file_name)
+    decrypt_utc_file_hex_pwd(pwd_hex, utc_file_name)
