@@ -1,0 +1,11 @@
+.cache
+__pycache__
+build/
+.tox
+*.pyc
+*.pyd
+*.o
+*.a
+*.so
+*.lib
+*.dylib
