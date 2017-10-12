@@ -1,0 +1,5 @@
+py==1.4.34
+pycrypto==2.6.1
+pysha3==1.0.2
+pytest==3.2.3
+scrypt==0.8.0
