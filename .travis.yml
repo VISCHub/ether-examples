@@ -6,5 +6,5 @@ python:
   - "3.6"
 install:
   - pip install -U pysha3 pycrypto scrypt pytest
-scrypt:
+script:
   - pytest
