@@ -1,7 +1,8 @@
 import os, sys, binascii
 import pytest
 
-from decrypt_utc import decrypt_utc_file, decrypt_utc_file_hex_pwd
+from wallet.decrypt_utc import decrypt_utc_file
+from wallet.decrypt_utc import decrypt_utc_file_hex_pwd
 
 params_v3_scrypt_aes_128_ctr = {
     'utc_file': 'tests/test_v3_scrypt_aes_128_ctr_utc.json',
