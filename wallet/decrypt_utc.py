@@ -6,8 +6,6 @@ from Crypto.Cipher import AES
 from Crypto.Util import Counter
 from sha3 import keccak_256
 
-# pip install -U pysha3 scrypt pycrypto
-
 
 def kdf_scrypt(pwd, kdf_params):
     '''Derive key using Scrypt. Accept KDF params from Ether UTC file'''
@@ -75,7 +73,6 @@ def decrypt_utc_file(pwd, utc_file_name):
     # Delegate decryption
     dec_priv_key = SUPPORTED_CIPHERS[cipher_name](pwd, utc_data)
     print("Successfully decrypted the UTC file: %s" % utc_file_name)
-
 
 
 def decrypt_utc_file_hex_pwd(pwd_hex, utc_file_name):
