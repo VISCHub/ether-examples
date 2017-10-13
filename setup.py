@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 
-from distutils.core import setup
+# Read https://github.com/django-extensions/django-extensions/issues/92
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
 
 setup(name='VISCWallet',
       version='0.0.1',
