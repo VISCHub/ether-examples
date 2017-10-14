@@ -1,0 +1,13 @@
+graph LR
+
+PRNG(PRNG)
+Priv(Private Key: 256 bits)
+Pub(Public Key: 256 bits)
+Addr(Ethereum Address: 160 bits)
+ECC((ECC Secp256k1))
+
+
+PRNG --> Priv;
+Priv --> ECC;
+ECC --> Pub;
+Pub -->|Remove the first 24 hexa chars| Addr;
