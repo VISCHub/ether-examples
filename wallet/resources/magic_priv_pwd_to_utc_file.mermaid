@@ -1,0 +1,16 @@
+graph LR
+
+Priv(Private Key: 256 bits)
+Pub(Public Key: 256 bits)
+Addr(Ethereum Address: 160 bits)
+ECC((ECC Secp256k1))
+Pwd(Password)
+UTCFile(UTC JSON File)
+Magic((Magic Happens Here))
+
+Priv --> ECC;
+ECC --> Pub;
+Pub -->|Remove the first 24 hexa chars| Addr;
+Priv --> Magic;
+Pwd --> Magic;
+Magic --> UTCFile;
