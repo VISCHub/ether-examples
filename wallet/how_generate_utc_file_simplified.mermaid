@@ -1,0 +1,50 @@
+graph TB
+
+PRNG(PRNG)
+User[User]
+Priv(Private Key: 256 bits)
+Pub(Public Key: 256 bits)
+Addr(Ethereum Address: 160 bits)
+ECC((ECC Secp256k1))
+KDF((KDF: Scrypt))
+Pwd(Password)
+Salt(Salt)
+KdfParams(KDF Params)
+UUID(UUID)
+DkLen(Derived Key Length)
+UTCFile(UTC JSON File)
+AES((AES 128 CTR))
+AES_IV(AES IV: Init Vector)
+MAC(MAC: Message Authentication Code)
+DerivedKey(Derived Key: 32 bytes = 256 bits)
+EncKey(Encryption Key: 16 bytes = 128 bits)
+MacKey(MAC Key: 16 bytes = 128 bits)
+CipherText(Cipher Text)
+MacFunc((MAC Function))
+
+PRNG --> Priv;
+PRNG --> Pwd;
+PRNG --> Salt;
+User -.-> Pwd;
+User --> KdfParams;
+PRNG --> UUID;
+Priv --> ECC;
+ECC --> Pub;
+Pub -->|Remove the first 24 hexa chars| Addr;
+Pwd --> KDF;
+Salt --> KDF;
+KdfParams --> KDF;
+DkLen --> KDF;
+User --> DkLen;
+AES_IV --> AES;
+PRNG --> AES_IV;
+KDF --> DerivedKey;
+DerivedKey -->|First 128 bites| EncKey;
+DerivedKey -->|Last 128 bites| MacKey;
+EncKey --> AES;
+AES --> CipherText;
+CipherText --> MacFunc;
+MacKey --> MacFunc;
+MacFunc --> MAC;
+CipherText --> UTCFile;
+MAC --> UTCFile;
