@@ -9,3 +9,5 @@ build/
 *.so
 *.lib
 *.dylib
+*.egg-info
+.ipynb_checkpoints
