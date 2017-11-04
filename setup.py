@@ -12,5 +12,4 @@ setup(name='VISCWallet',
       author='Viet Le',
       author_email='vietlq85@gmail.com',
       url='https://github.com/VISCHub/ether-examples',
-      packages=['wallet'],
-)
+      packages=['wallet'])

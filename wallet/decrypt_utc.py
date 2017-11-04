@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
-import binascii, json, getpass, sys
+import binascii
+import json
+import getpass
+import sys
 import scrypt
 from Crypto.Cipher import AES
 from Crypto.Util import Counter
@@ -73,6 +76,7 @@ def decrypt_utc_file(pwd, utc_file_name):
     # Delegate decryption
     dec_priv_key = SUPPORTED_CIPHERS[cipher_name](pwd, utc_data)
     print("Successfully decrypted the UTC file: %s" % utc_file_name)
+    return dec_priv_key
 
 
 def decrypt_utc_file_hex_pwd(pwd_hex, utc_file_name):

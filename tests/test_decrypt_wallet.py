@@ -1,6 +1,4 @@
-import os, sys, binascii
-import pytest
-
+import binascii
 from wallet.decrypt_utc import decrypt_utc_file
 from wallet.decrypt_utc import decrypt_utc_file_hex_pwd
 
