@@ -26,7 +26,8 @@ SUPPORTED_KDFS = {
 
 
 def decrypt_aes_128_ctr(pwd, utc_data):
-    '''Decrypt AES 128 CTR. Requires plain text password and Ether UTC file as JSON object'''
+    '''Decrypt AES 128 CTR.
+    Requires plain text password and Ether UTC file as JSON object'''
     # Decrypt
     utc_cipher_data = utc_data['Crypto']
     # Check that we have supported KDF
@@ -36,7 +37,9 @@ def decrypt_aes_128_ctr(pwd, utc_data):
     kdf_params = utc_cipher_data['kdfparams']
     # Delegate to the KDF
     derived_key = SUPPORTED_KDFS[cur_kdf](pwd, kdf_params)
-    assert len(derived_key) == 32, 'Derived key: Expected length 32, got %d' % len(derived_key)
+    assert len(
+        derived_key) == 32, 'Derived key: Expected length 32, got %d' % len(
+            derived_key)
 
     # Decryption key is only the first 16 bytes
     dec_key = derived_key[:16]
@@ -50,10 +53,12 @@ def decrypt_aes_128_ctr(pwd, utc_data):
     cipher = AES.new(dec_key, mode=AES.MODE_CTR, counter=counter)
     dec_priv_key = binascii.hexlify(cipher.decrypt(cipher_text))
 
-    # MAC in v3 is the KECCAK-256 of the last 16 bytes of the derived key and cipher text
+    # MAC in v3 is the KECCAK-256 of the last 16 bytes
+    # of the derived key and cipher text
     expected_mac = utc_cipher_data['mac']
     actual_mac = keccak_256(derived_key[-16:] + cipher_text).hexdigest()
-    assert actual_mac == expected_mac, 'MAC error: Expected %s != actual %s' % (expected_mac, actual_mac)
+    assert actual_mac == expected_mac, 'MAC error: Expected %s != %s' % (
+        expected_mac, actual_mac)
     return dec_priv_key
 
 
@@ -71,7 +76,8 @@ def decrypt_utc_file(pwd, utc_file_name):
     cipher_name = utc_cipher_data['cipher']
 
     # For this example, only AES 128 CTR is supported
-    assert cipher_name in SUPPORTED_CIPHERS, 'Unsupported cipher: %s' % cipher_name
+    assert cipher_name in SUPPORTED_CIPHERS, 'Unsupported cipher: %s' % (
+        cipher_name)
 
     # Delegate decryption
     dec_priv_key = SUPPORTED_CIPHERS[cipher_name](pwd, utc_data)
