@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/VISCHub/ether-examples.svg?branch=master)](https://travis-ci.org/VISCHub/ether-examples)
+
 # ether-examples
 Learning Ethereum by example
 
