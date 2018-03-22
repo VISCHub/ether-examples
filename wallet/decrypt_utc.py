@@ -97,7 +97,7 @@ if __name__ == '__main__':
         sys.exit(1)
     print("Preparing to decrypt wallet from UTC file")
     utc_file_name = sys.argv[1]
-    pwd = None
-    while not pwd:
+    pwd_hex = None
+    while not pwd_hex:
         pwd_hex = getpass.getpass("UTC file password in HEX: ")
     decrypt_utc_file_hex_pwd(pwd_hex, utc_file_name)
