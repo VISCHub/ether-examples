@@ -35,12 +35,12 @@ def decrypt_aes_128_ctr(pwd, utc_data):
     utc_cipher_data = utc_data["Crypto"]
     # Check that we have supported KDF
     cur_kdf = utc_cipher_data["kdf"]
-    assert cur_kdf in SUPPORTED_KDFS, "Unsupported KDF: %s" % cur_kdf
+    assert cur_kdf in SUPPORTED_KDFS, f"Unsupported KDF: {cur_kdf}"
 
     kdf_params = utc_cipher_data["kdfparams"]
     # Delegate to the KDF
     derived_key = SUPPORTED_KDFS[cur_kdf](pwd, kdf_params)
-    assert len(derived_key) == 32, "Derived key: Expected length 32, got %d" % len(derived_key)
+    assert len(derived_key) == 32, f"Derived key: Expected length 32, got {len(derived_key)}"
 
     # Decryption key is only the first 16 bytes
     dec_key = derived_key[:16]
@@ -58,7 +58,7 @@ def decrypt_aes_128_ctr(pwd, utc_data):
     # of the derived key and cipher text
     expected_mac = utc_cipher_data["mac"]
     actual_mac = keccak_256(derived_key[-16:] + cipher_text).hexdigest()
-    assert actual_mac == expected_mac, "MAC error: Expected %s != %s" % (expected_mac, actual_mac)
+    assert actual_mac == expected_mac, f"MAC error: Expected {expected_mac} != {actual_mac}"
     return dec_priv_key
 
 
@@ -78,11 +78,11 @@ def decrypt_utc_file(pwd, utc_file_name):
     cipher_name = utc_cipher_data["cipher"]
 
     # For this example, only AES 128 CTR is supported
-    assert cipher_name in SUPPORTED_CIPHERS, "Unsupported cipher: %s" % (cipher_name)
+    assert cipher_name in SUPPORTED_CIPHERS, f"Unsupported cipher: {cipher_name}"
 
     # Delegate decryption
     dec_priv_key = SUPPORTED_CIPHERS[cipher_name](pwd, utc_data)
-    print("Successfully decrypted the UTC file: %s" % utc_file_name)
+    print("Successfully decrypted the UTC file: {utc_file_name}")
     return dec_priv_key
 
 
@@ -96,7 +96,7 @@ def decrypt_utc_file_hex_pwd(pwd_hex, utc_file_name):
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        sys.stderr.write("Usage: %s UTC_JSON_file\n" % sys.argv[0])
+        sys.stderr.write(f"Usage: {sys.argv[0]} UTC_JSON_file\n")
         sys.exit(1)
     print("Preparing to decrypt wallet from UTC file")
     utc_file_name = sys.argv[1]
