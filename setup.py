@@ -6,10 +6,12 @@ try:
 except ImportError:
     from distutils.core import setup
 
-setup(name='VISCWallet',
-      version='0.0.1',
-      description='Test Wallet for Ether',
-      author='Viet Le',
-      author_email='vietlq85@gmail.com',
-      url='https://github.com/VISCHub/ether-examples',
-      packages=['wallet'])
+setup(
+    name="VISCWallet",
+    version="0.0.2",
+    description="Test Wallet for Ether",
+    author="Viet Le",
+    author_email="vietlq85@gmail.com",
+    url="https://github.com/VISCHub/ether-examples",
+    packages=["wallet"],
+)

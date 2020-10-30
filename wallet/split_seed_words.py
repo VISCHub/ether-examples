@@ -11,10 +11,10 @@ print("Decrypting the initial seed file")
 dec_cmd = "openssl aes-128-ctr -d -a -in message.enc -out message.dec"
 os.system(dec_cmd)
 
-with open('message.dec') as fh:
+with open("message.dec") as fh:
     words = fh.read().strip().split()
 
-os.unlink('message.dec')
+os.unlink("message.dec")
 
 idx = 0
 size = len(words)
@@ -28,17 +28,17 @@ while idx < size:
     print("Suggested random password: %s" % rand_pass)
     part_count += 1
     print("\nEncrypting the part #%d" % part_count)
-    in_file_name = 'message_part_%d.in' % part_count
-    out_file_name = 'message_part_%d.out' % part_count
-    png_file_name = 'message_part_%d.png' % part_count
-    with open(in_file_name, 'w') as fh:
-        fh.write(' '.join(part_words))
+    in_file_name = "message_part_%d.in" % part_count
+    out_file_name = "message_part_%d.out" % part_count
+    png_file_name = "message_part_%d.png" % part_count
+    with open(in_file_name, "w") as fh:
+        fh.write(" ".join(part_words))
     cmd = "openssl aes-128-ctr -salt -e -a -in %s -out %s"
     os.system(cmd % (in_file_name, out_file_name))
     os.unlink(in_file_name)
     os.system("qr < %s > %s" % (out_file_name, png_file_name))
     with open(out_file_name) as fh:
-        content = fh.read().encode('utf-8')
+        content = fh.read().encode("utf-8")
         dgst = hashlib.sha256(content).hexdigest()
-        print('SHA256 of the part #%d: %s' % (part_count, dgst))
+        print("SHA256 of the part #%d: %s" % (part_count, dgst))
     idx += num_elem_per_part
