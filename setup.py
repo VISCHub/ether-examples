@@ -8,7 +8,7 @@ except ImportError:
 
 setup(
     name="VISCWallet",
-    version="0.0.2",
+    version="0.0.3",
     description="Test Wallet for Ether",
     author="Viet Le",
     author_email="vietlq85@gmail.com",

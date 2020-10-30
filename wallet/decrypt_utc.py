@@ -5,13 +5,14 @@ import json
 import getpass
 import sys
 import scrypt
-from Crypto.Cipher import AES
-from Crypto.Util import Counter
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from sha3 import keccak_256
 
 
 def kdf_scrypt(pwd, kdf_params):
-    """Derive key using Scrypt. Accept KDF params from Ether UTC file"""
+    """
+    Derive key using Scrypt. Accept KDF params from Ether UTC file.
+    """
     # Convert salt from HEX to binary data
     salt = binascii.unhexlify(kdf_params["salt"])
     dklen = kdf_params["dklen"]
@@ -26,8 +27,10 @@ SUPPORTED_KDFS = {
 
 
 def decrypt_aes_128_ctr(pwd, utc_data):
-    """Decrypt AES 128 CTR.
-    Requires plain text password and Ether UTC file as JSON object"""
+    """
+    Decrypt AES 128 CTR.
+    Requires plain text password and Ether UTC file as JSON object.
+    """
     # Decrypt
     utc_cipher_data = utc_data["Crypto"]
     # Check that we have supported KDF
@@ -45,11 +48,11 @@ def decrypt_aes_128_ctr(pwd, utc_data):
     cipher_text = binascii.unhexlify(utc_cipher_data["ciphertext"])
     # Convert IV from HEX to base 10
     aes_iv_hex = utc_cipher_data["cipherparams"]["iv"]
-    aes_iv = int(aes_iv_hex, 16)
+    aes_iv_raw = binascii.unhexlify(aes_iv_hex)
     # Get the counter for AES
-    counter = Counter.new(128, initial_value=aes_iv)
-    cipher = AES.new(dec_key, mode=AES.MODE_CTR, counter=counter)
-    dec_priv_key = binascii.hexlify(cipher.decrypt(cipher_text))
+    cipher = Cipher(algorithms.AES(dec_key), modes.CTR(aes_iv_raw))
+    decryptor = cipher.decryptor()
+    dec_priv_key = binascii.hexlify(decryptor.update(cipher_text) + decryptor.finalize())
 
     # MAC in v3 is the KECCAK-256 of the last 16 bytes
     # of the derived key and cipher text
@@ -65,7 +68,9 @@ SUPPORTED_CIPHERS = {
 
 
 def decrypt_utc_file(pwd, utc_file_name):
-    """Decrypt Ether UTC file. The password must be in plain text"""
+    """
+    Decrypt Ether UTC file. The password must be in plain text.
+    """
     with open(utc_file_name, "r") as utc_fh:
         utc_data = json.load(utc_fh)
 
@@ -82,7 +87,9 @@ def decrypt_utc_file(pwd, utc_file_name):
 
 
 def decrypt_utc_file_hex_pwd(pwd_hex, utc_file_name):
-    """Decrypt Ether UTC file. The password must be in HEX"""
+    """
+    Decrypt Ether UTC file. The password must be in HEX.
+    """
     pwd = binascii.unhexlify(pwd_hex)
     decrypt_utc_file(pwd, utc_file_name)
 
