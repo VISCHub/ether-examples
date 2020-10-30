@@ -46,16 +46,15 @@ def decrypt_aes_128_ctr(pwd, utc_data):
     dec_key = derived_key[:16]
     # Convert cipher text from HEX to binary data
     cipher_text = binascii.unhexlify(utc_cipher_data["ciphertext"])
-    # Convert IV from HEX to base 10
-    aes_iv_hex = utc_cipher_data["cipherparams"]["iv"]
-    aes_iv_raw = binascii.unhexlify(aes_iv_hex)
-    # Get the counter for AES
+    # Convert IV from HEX to raw
+    aes_iv_raw = binascii.unhexlify(utc_cipher_data["cipherparams"]["iv"])
+    # Construct AES-CTR-128 cipher and decipher
     cipher = Cipher(algorithms.AES(dec_key), modes.CTR(aes_iv_raw))
     decryptor = cipher.decryptor()
-    dec_priv_key = binascii.hexlify(decryptor.update(cipher_text) + decryptor.finalize())
+    dec_priv_key = binascii.hexlify(decryptor.update(cipher_text))
+    assert b"" == decryptor.finalize(), "Decryption key: There is still residue in the decryptor"
 
-    # MAC in v3 is the KECCAK-256 of the last 16 bytes
-    # of the derived key and cipher text
+    # MAC in v3 is the KECCAK-256 of the last 16 bytes of the derived key and cipher text
     expected_mac = utc_cipher_data["mac"]
     actual_mac = keccak_256(derived_key[-16:] + cipher_text).hexdigest()
     assert actual_mac == expected_mac, f"MAC error: Expected {expected_mac} != {actual_mac}"
