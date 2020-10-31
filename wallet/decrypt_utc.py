@@ -7,7 +7,7 @@ import sys
 import scrypt
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend as get_default_backend
-from sha3 import keccak_256
+from Crypto.Hash import keccak
 
 
 def kdf_scrypt(pwd, kdf_params):
@@ -57,7 +57,9 @@ def decrypt_aes_128_ctr(pwd, utc_data):
 
     # MAC in v3 is the KECCAK-256 of the last 16 bytes of the derived key and cipher text
     expected_mac = utc_cipher_data["mac"]
-    actual_mac = keccak_256(derived_key[-16:] + cipher_text).hexdigest()
+    keccak_256 = keccak.new(digest_bits=256)
+    keccak_256.update(derived_key[-16:] + cipher_text)
+    actual_mac = keccak_256.hexdigest()
     assert actual_mac == expected_mac, f"MAC error: Expected {expected_mac} != {actual_mac}"
     return dec_priv_key
 
