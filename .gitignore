@@ -11,3 +11,4 @@ build/
 *.dylib
 *.egg-info
 .ipynb_checkpoints
+.vscode
