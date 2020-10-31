@@ -5,6 +5,6 @@ python:
   - "3.8"
   - "3.9"
 install:
-  - pip install -U cryptography cryptodome scrypt pytest
+  - pip install -U cryptography pycryptodome scrypt pytest
 script:
   - pytest -v
