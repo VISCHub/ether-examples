@@ -2,7 +2,7 @@
 
 # ether-examples
 
-Learning Ethereum by example.
+Learning Ethereum by example. It's recommended that you use Python 3.6 and above to stay up to date. Code written here tested for Python 3.6 and above only.
 
 ## Articles in English
 
