@@ -4,13 +4,19 @@ import binascii
 import json
 import getpass
 import sys
+import logging
+from typing import Dict
+
 from Crypto.Protocol.KDF import scrypt
 from Crypto.Cipher import AES
 from Crypto.Util import Counter
 from Crypto.Hash import keccak
 
 
-def kdf_scrypt(pwd, kdf_params):
+logging.basicConfig(level=logging.INFO)
+
+
+def kdf_scrypt(pwd: bytes, kdf_params: Dict) -> bytes:
     """
     Derive key using Scrypt. Accept KDF params from Ether UTC file.
     """
@@ -19,7 +25,7 @@ def kdf_scrypt(pwd, kdf_params):
     dklen = kdf_params["dklen"]
     N, r, p = kdf_params["n"], kdf_params["r"], kdf_params["p"]
     # Get derived key
-    return scrypt(pwd, salt, key_len=dklen, N=N, r=r, p=p)
+    return scrypt(pwd, salt, key_len=dklen, N=N, r=r, p=p, num_keys=1)
 
 
 SUPPORTED_KDFS = {
@@ -27,7 +33,7 @@ SUPPORTED_KDFS = {
 }
 
 
-def decrypt_aes_128_ctr(pwd, utc_data):
+def decrypt_aes_128_ctr(pwd: bytes, utc_data: Dict) -> bytes:
     """
     Decrypt AES 128 CTR.
     Requires plain text password and Ether UTC file as JSON object.
@@ -62,12 +68,13 @@ def decrypt_aes_128_ctr(pwd, utc_data):
     return dec_priv_key
 
 
+# For this example, only AES 128 CTR is supported
 SUPPORTED_CIPHERS = {
     "aes-128-ctr": decrypt_aes_128_ctr,
 }
 
 
-def decrypt_utc_file(pwd, utc_file_name):
+def decrypt_utc_file(pwd: bytes, utc_file_name: str) -> bytes:
     """
     Decrypt Ether UTC file. The password must be in plain text.
     """
@@ -77,30 +84,29 @@ def decrypt_utc_file(pwd, utc_file_name):
     utc_cipher_data = utc_data["Crypto"]
     cipher_name = utc_cipher_data["cipher"]
 
-    # For this example, only AES 128 CTR is supported
     assert cipher_name in SUPPORTED_CIPHERS, f"Unsupported cipher: {cipher_name}"
 
     # Delegate decryption
     dec_priv_key = SUPPORTED_CIPHERS[cipher_name](pwd, utc_data)
-    print("Successfully decrypted the UTC file: {utc_file_name}")
+    logging.info(f"Successfully decrypted the UTC file: {utc_file_name}")
     return dec_priv_key
 
 
-def decrypt_utc_file_hex_pwd(pwd_hex, utc_file_name):
+def decrypt_utc_file_hex_pwd(pwd_hex: str, utc_file_name: str) -> bytes:
     """
     Decrypt Ether UTC file. The password must be in HEX.
     """
     pwd = binascii.unhexlify(pwd_hex)
-    decrypt_utc_file(pwd, utc_file_name)
+    return decrypt_utc_file(pwd, utc_file_name)
 
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         sys.stderr.write(f"Usage: {sys.argv[0]} UTC_JSON_file\n")
         sys.exit(1)
-    print("Preparing to decrypt wallet from UTC file")
+    logging.info("Preparing to decrypt wallet from UTC file...")
     utc_file_name = sys.argv[1]
     pwd_hex = None
     while not pwd_hex:
-        pwd_hex = getpass.getpass("UTC file password in HEX: ")
+        pwd_hex = getpass.getpass("Password in HEX to decrypt the UTC JSON file: ")
     decrypt_utc_file_hex_pwd(pwd_hex, utc_file_name)

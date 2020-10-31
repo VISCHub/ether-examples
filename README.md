@@ -4,6 +4,13 @@
 
 Learning Ethereum by example. It's recommended that you use Python 3.6 and above to stay up to date. Code written here tested for Python 3.6 and above only.
 
+How to run locally:
+
+```
+$ python -m wallet.decrypt_utc tests/test_v3_scrypt_aes_128_ctr_utc.json
+Password in HEX to decrypt the UTC JSON file:
+```
+
 ## Articles in English
 
 Coming soon...
