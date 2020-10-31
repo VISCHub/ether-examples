@@ -4,7 +4,7 @@ import binascii
 import json
 import getpass
 import sys
-import scrypt
+from Crypto.Protocol.KDF import scrypt
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend as get_default_backend
 from Crypto.Hash import keccak
@@ -19,7 +19,7 @@ def kdf_scrypt(pwd, kdf_params):
     dklen = kdf_params["dklen"]
     N, r, p = kdf_params["n"], kdf_params["r"], kdf_params["p"]
     # Get derived key
-    return scrypt.hash(pwd, salt, N=N, r=r, p=p, buflen=dklen)
+    return scrypt(pwd, salt, key_len=dklen, N=N, r=r, p=p)
 
 
 SUPPORTED_KDFS = {
