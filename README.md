@@ -8,7 +8,9 @@ How to run locally:
 
 ```
 $ python -m wallet.decrypt_utc tests/test_v3_scrypt_aes_128_ctr_utc.json
+INFO:root:Preparing to decrypt wallet from UTC file...
 Password in HEX to decrypt the UTC JSON file:
+INFO:root:Successfully decrypted the UTC file: tests/test_v3_scrypt_aes_128_ctr_utc.json
 ```
 
 ## Articles in English
