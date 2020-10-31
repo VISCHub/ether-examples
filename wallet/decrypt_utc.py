@@ -6,6 +6,7 @@ import getpass
 import sys
 import scrypt
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.backends import default_backend as get_default_backend
 from sha3 import keccak_256
 
 
@@ -49,7 +50,7 @@ def decrypt_aes_128_ctr(pwd, utc_data):
     # Convert IV from HEX to raw
     aes_iv_raw = binascii.unhexlify(utc_cipher_data["cipherparams"]["iv"])
     # Construct AES-CTR-128 cipher and decipher
-    cipher = Cipher(algorithms.AES(dec_key), modes.CTR(aes_iv_raw))
+    cipher = Cipher(algorithms.AES(dec_key), modes.CTR(aes_iv_raw), backend=get_default_backend())
     decryptor = cipher.decryptor()
     dec_priv_key = binascii.hexlify(decryptor.update(cipher_text))
     assert b"" == decryptor.finalize(), "Decryption key: There is still residue in the decryptor"
