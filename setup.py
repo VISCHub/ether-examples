@@ -6,7 +6,7 @@ with codecs.open("README.rst", "r", "utf-8") as fd:
 
 setup(
     name="ether-examples",
-    version="0.2.0",
+    version="0.2.1",
     description="Learn Ethereum by examples",
     long_description=long_description,
     author="Viet Le",
