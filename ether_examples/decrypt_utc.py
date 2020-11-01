@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import binascii
 import json
@@ -16,7 +16,7 @@ from Crypto.Hash import keccak
 logging.basicConfig(level=logging.INFO)
 
 
-def kdf_scrypt(pwd: bytes, kdf_params: Dict) -> bytes:
+def _utc_kdf_scrypt(pwd: bytes, kdf_params: Dict) -> bytes:
     """
     Derive key using Scrypt. Accept KDF params from Ether UTC file.
     """
@@ -29,11 +29,11 @@ def kdf_scrypt(pwd: bytes, kdf_params: Dict) -> bytes:
 
 
 SUPPORTED_KDFS = {
-    "scrypt": kdf_scrypt,
+    "scrypt": _utc_kdf_scrypt,
 }
 
 
-def decrypt_aes_128_ctr(pwd: bytes, utc_data: Dict) -> bytes:
+def _decrypt_utc_aes_128_ctr(pwd: bytes, utc_data: Dict) -> bytes:
     """
     Decrypt AES 128 CTR.
     Requires plain text password and Ether UTC file as JSON object.
@@ -70,7 +70,7 @@ def decrypt_aes_128_ctr(pwd: bytes, utc_data: Dict) -> bytes:
 
 # For this example, only AES 128 CTR is supported
 SUPPORTED_CIPHERS = {
-    "aes-128-ctr": decrypt_aes_128_ctr,
+    "aes-128-ctr": _decrypt_utc_aes_128_ctr,
 }
 
 
@@ -100,7 +100,7 @@ def decrypt_utc_file_hex_pwd(pwd_hex: str, utc_file_name: str) -> bytes:
     return decrypt_utc_file(pwd, utc_file_name)
 
 
-if __name__ == "__main__":
+def run_decrypt_utc_file_hex_pwd():
     if len(sys.argv) != 2:
         sys.stderr.write(f"Usage: {sys.argv[0]} UTC_JSON_file\n")
         sys.exit(1)
@@ -109,4 +109,9 @@ if __name__ == "__main__":
     pwd_hex = None
     while not pwd_hex:
         pwd_hex = getpass.getpass("Password in HEX to decrypt the UTC JSON file: ")
-    decrypt_utc_file_hex_pwd(pwd_hex, utc_file_name)
+    hex_priv_key = binascii.hexlify(decrypt_utc_file_hex_pwd(pwd_hex, utc_file_name))
+    logging.warning(f"**** Your private key in hex is `{hex_priv_key.decode('ascii')}` ****")
+
+
+if __name__ == "__main__":
+    run_decrypt_utc_file_hex_pwd()
